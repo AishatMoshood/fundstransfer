@@ -1,6 +1,7 @@
 package com.dot.ai.http.controller.request;
 
-import com.dot.ai.http.controller.model.BaseRequest;
+
+import com.dot.ai.common.models.BaseRequest;
 
 /**
  * @author Aishat Moshood

@@ -1,6 +1,6 @@
 package com.dot.ai.http.controller.response;
 
-import com.dot.ai.http.controller.model.BaseResponse;
+import com.dot.ai.common.models.BaseResponse;
 import lombok.Data;
 
 /**
