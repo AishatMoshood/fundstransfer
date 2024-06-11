@@ -1,6 +1,6 @@
 package com.dot.ai.http.controller.model;
 
-import com.dot.ai.common.models.BeneficiaryInfo;
+import com.dot.ai.commonservice.models.BeneficiaryInfo;
 import lombok.Data;
 
 /**

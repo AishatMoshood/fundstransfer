@@ -1,7 +1,7 @@
 package com.dot.ai.http.controller.model;
 
-import com.dot.ai.common.models.BeneficiaryInfo;
-import com.dot.ai.common.models.SenderInfo;
+import com.dot.ai.commonservice.models.BeneficiaryInfo;
+import com.dot.ai.commonservice.models.SenderInfo;
 import lombok.Data;
 
 import java.math.BigDecimal;

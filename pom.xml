@@ -18,13 +18,13 @@
 		two bank accounts</description>
 
 	<modules>
-		<module>domain/biz/service-impl</module>
 		<module>domain/biz/service</module>
+		<module>domain/biz/scheduler-service</module>
 		<module>domain/repository</module>
 		<module>traffic/http-api</module>
 		<module>repository/repository-mysql-impl</module>
-		<module>common/common</module>
-	</modules>
+		<module>common/common-service</module>
+    </modules>
 
     <properties>
 		<java.version>11</java.version>
@@ -34,40 +34,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- internal dependencies begin -->
-<!--		<dependency>-->
-<!--			<groupId>com.dot.ai</groupId>-->
-<!--			<artifactId>common</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.dot.ai</groupId>-->
-<!--			<artifactId>http-api</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.dot.ai</groupId>-->
-<!--			<artifactId>repository</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.dot.ai</groupId>-->
-<!--			<artifactId>repository-mysql-impl</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.dot.ai</groupId>-->
-<!--			<artifactId>service</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.dot.ai</groupId>-->
-<!--			<artifactId>service-impl</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
-		<!-- internal dependencies end -->
-
-		<!-- external dependencies begin -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -81,7 +47,6 @@
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>3.0.3</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -166,12 +131,18 @@
 			<version>1.0.3</version>
 		</dependency>
 
+		<!-- tools begin -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<version>${jaxb.api.version}</version>
 		</dependency>
-		<!-- external dependencies end -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>2.0.33</version>
+		</dependency>
+		<!-- tools end -->
 	</dependencies>
 
 	<build>
@@ -187,6 +158,32 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
+			<!-- maven-source-plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.3</version>
 			</plugin>
 		</plugins>
 	</build>

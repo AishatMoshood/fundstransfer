@@ -1,5 +1,7 @@
 package com.dot.ai.repository.entities;
 
+import com.dot.ai.commonservice.enums.CommissionWorthyEnum;
+import com.dot.ai.commonservice.enums.TransactionStatusEnum;
 import io.swagger.annotations.ApiModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,12 +54,6 @@ public class TransactionOrder extends BaseEntity {
     @Column(name = "payment_reference")
     private String paymentReference;
 
-    /**
-     * name enquiry reference
-     */
-    @Column(name = "name_enquiry_reference")
-    private String nameEnquiryReference;
-
     @Column(name = "beneficiary_account_name")
     private String beneficiaryAccountName;
 
@@ -69,6 +65,9 @@ public class TransactionOrder extends BaseEntity {
 
     @Column(name = "beneficiary_kyc_level")
     private String beneficiaryKycLevel;
+
+    @Column(name = "beneficiary_bank_code")
+    private String beneficiaryBankCode;
 
     @Column(name = "sender_account_name")
     private String senderAccountName;
@@ -82,14 +81,8 @@ public class TransactionOrder extends BaseEntity {
     @Column(name = "sender_kyc_level")
     private String senderKycLevel;
 
-    @Column(name = "sender_institution_code")
-    private String senderInstitutionCode;
-
-    /**
-     * Place of transaction, longitude + dimension
-     */
-    @Column(name = "transaction_location")
-    private String transactionLocation;
+    @Column(name = "sender_bank_code")
+    private String senderBankCode;
 
     /**
      * Up to 128 characters
@@ -124,7 +117,6 @@ public class TransactionOrder extends BaseEntity {
      */
     @Column(name = "commission_worthy")
     private String commissionWorthy;
-
 
     /**
      * Additional field information，json

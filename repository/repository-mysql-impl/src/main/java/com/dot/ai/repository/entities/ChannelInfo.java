@@ -20,7 +20,7 @@ public class ChannelInfo extends BaseEntity {
     /**
      * channel name
      */
-    private String channel;
+    private String channelName;
 
     /**
      * channel id
@@ -39,6 +39,13 @@ public class ChannelInfo extends BaseEntity {
      */
     @Column(name = "channel_key")
     private String channelKey;
+
+    /**
+     * channel validity
+     */
+    @Column(name = "channel_validity")
+    private String channelValidity;
+
 
     /**
      * Additional field information，json

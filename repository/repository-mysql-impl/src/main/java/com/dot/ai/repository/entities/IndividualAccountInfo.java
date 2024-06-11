@@ -1,5 +1,6 @@
 package com.dot.ai.repository.entities;
 
+import com.dot.ai.commonservice.enums.GenderEnum;
 import io.swagger.annotations.ApiModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,22 +42,29 @@ public class IndividualAccountInfo extends BaseEntity {
     private String emailAddress;
 
     /**
-     * individual's email
+     * individual's gender
      */
     @Column(name = "gender")
     private GenderEnum gender;
 
-//    /**
-//     * individual's email
-//     */
-//    @Column(name = "payment_reference")
-//    private String accountName;
+    /**
+     * individual's email
+     */
+    @Column(name = "account_name")
+    private String accountName;
 
-//    /**
-//     * individual's email
-//     */
-//    @Column(name = "name_enquiry_reference")
-//    private String accountNumber;
+    /**
+     * individual's email
+     */
+    @Column(name = "account_number")
+    private String accountNumber;
+
+    /**
+     * individual's bank code
+     */
+    @Column(name = "bank_code")
+    private String bankCode;
+
 
     /**
      * individual's bankVerificationNumber
@@ -65,7 +73,7 @@ public class IndividualAccountInfo extends BaseEntity {
     private String bankVerificationNumber;
 
     /**
-     * individual's email
+     * individual's kycLevel
      */
     //todo: find out if this is dependent on bank
     @Column(name = "kyc_level")

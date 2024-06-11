@@ -1,11 +1,14 @@
 package com.dot.ai.http.controller.service;
 
+import com.dot.ai.commonservice.enums.TransactionStatusEnum;
 import com.dot.ai.http.controller.request.NameEnquiryRequest;
 import com.dot.ai.http.controller.request.PaymentRequest;
-import com.dot.ai.http.controller.request.ReQueryRequest;
-import com.dot.ai.http.controller.response.NameEnquiryResponse;
-import com.dot.ai.http.controller.response.PaymentResponse;
-import com.dot.ai.http.controller.response.ReQueryResponse;
+import com.dot.ai.http.controller.response.FundsTransferResponse;
+import org.springframework.data.domain.Pageable;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Optional;
 
 /**
  * @author Aishat Moshood
@@ -20,20 +23,40 @@ public interface FundsTransferControllerService {
      * @param request encryptedData,includes account number,request id
      * @return encryptedData,includes full name,kyc level,bvn etc.
      */
-    NameEnquiryResponse nameEnquiry(NameEnquiryRequest request);
+    FundsTransferResponse nameEnquiry(NameEnquiryRequest request, String key);
 
     /**
-     * Transfer from between two financial institutions
+     * Transfer between two financial institutions
      * @param request encryptedData,includes account number,amount,transaction id
      * @return encryptedData includes full name,kyc level,bvn etc. for both beneficiary and sender
      */
-    PaymentResponse payment(PaymentRequest request);
+    FundsTransferResponse payment(PaymentRequest request, String key);
 
     /**
-     * Query final status
-     * @param request encryptedData,includes transaction id
-     * @return encryptedData includes full name,kyc level,bvn etc. for both beneficiary and sender
+     * Query transaction by optional param
+     * @param accountNumber
+     * @param minAmount
+     * @param startDate
+     * @param endDate
+     * @param status
+     * @param key
+     * @param pageable
+     *
+     * @return paginated transactions by param
      */
-    ReQueryResponse queryTransactionStatus(ReQueryRequest request);
+    FundsTransferResponse getTransactions(
+            Optional<String> accountNumber,
+            Optional<BigDecimal> minAmount,
+            Optional<Date> startDate,
+            Optional<Date> endDate,
+            Optional<TransactionStatusEnum> status,
+            String key,
+            Pageable pageable);
 
+
+    /**
+     * Daily transactions summary
+     * @return encryptedData,includes totalTransactions, totalTransactionFee
+     */
+    FundsTransferResponse generateDailyTransactionSummary(Date date, String key);
 }
