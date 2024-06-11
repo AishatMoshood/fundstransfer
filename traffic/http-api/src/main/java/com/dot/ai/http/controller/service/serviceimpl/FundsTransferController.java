@@ -38,7 +38,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/fundstransfer/v1/direct/")
+@RequestMapping("/fundstransfer/v1/direct")
 public class
 FundsTransferController implements FundsTransferControllerService {
 
