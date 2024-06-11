@@ -2,17 +2,16 @@ package com.dot.ai.http.controller.service.serviceimpl;
 
 import com.alibaba.fastjson2.JSON;
 import com.dot.ai.commonservice.enums.ResponseCodeEnum;
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.commonservice.models.FundsTransferBaseModel;
 import com.dot.ai.commonservice.models.PaymentModel;
 import com.dot.ai.commonservice.param.PaymentParam;
 import com.dot.ai.commonservice.service.EncryptionService;
 import com.dot.ai.domain.biz.model.DailySummaryModel;
 import com.dot.ai.domain.biz.model.GetTransactionsModel;
-import com.dot.ai.domain.biz.param.NameEnquiryParam;
 import com.dot.ai.domain.biz.service.FundsTransferService;
 import com.dot.ai.http.controller.annotation.PreVerify;
-import com.dot.ai.http.controller.constants.FundsTransferControllerConstant;
+import com.dot.ai.http.controller.constants.FundsTransferControllerConstants;
 import com.dot.ai.http.controller.request.PaymentRequest;
 import com.dot.ai.http.controller.response.FundsTransferResponse;
 import com.dot.ai.http.controller.service.FundsTransferControllerService;
@@ -63,7 +62,7 @@ FundsTransferController implements FundsTransferControllerService {
     @ApiOperation("Payment/FundsTransfer")
     @Override
     public FundsTransferResponse payment(@RequestBody PaymentRequest request,
-                                                           @RequestHeader("Authorization") String key) {
+                                         @RequestHeader("Authorization") String key) {
         FundsTransferBaseModel<PaymentModel> result;
         try {
             String requestBody = encryptionService.aesDecrypt(request.getData(), key);
@@ -101,7 +100,7 @@ FundsTransferController implements FundsTransferControllerService {
             @RequestParam Optional<BigDecimal> minAmount,
             @RequestParam Optional<Date> startDate,
             @RequestParam Optional<Date> endDate,
-            @RequestParam Optional<TransactionStatusEnum> status,
+            @RequestParam Optional<StatusEnum> status,
             @RequestHeader("Authorization") String key,
             @PageableDefault(size = 10) @SortDefault.SortDefaults({
                     @SortDefault(sort = "timestamp", direction = Sort.Direction.DESC)
@@ -142,8 +141,8 @@ FundsTransferController implements FundsTransferControllerService {
 
     private FundsTransferResponse decryptionFailed(String key){
         Map<String,String> result = new HashMap<>();
-        result.put(FundsTransferControllerConstant.FAILED_RESPONSE_CODE, ResponseCodeEnum.F07.getRespCode());
-        result.put(FundsTransferControllerConstant.FAILED_RESPONSE_MESSAGE,ResponseCodeEnum.F07.getRespMsg());
+        result.put(FundsTransferControllerConstants.FAILED_RESPONSE_CODE, ResponseCodeEnum.FA07.getRespCode());
+        result.put(FundsTransferControllerConstants.FAILED_RESPONSE_MESSAGE,ResponseCodeEnum.FA07.getRespMsg());
         return new FundsTransferResponse(encryptionService.aesDecrypt(JSON.toJSONString(result), key));
     }
 

@@ -14,6 +14,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import static com.dot.ai.traffic.scheduler.convert.SchedulerServiceConvert.calculateCommission;
+
 /**
  * @author Aishat Moshood
  * @since 11/06/2024
@@ -41,7 +43,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         List<TransactionOrder> transactions = fundsTransferRepService.getAllSuccessfulTransactions();
 
         transactions.forEach(transaction -> {
-            BigDecimal commission = transaction.getTransactionFee().multiply(new BigDecimal("0.2"));
+            BigDecimal commission = calculateCommission(transaction.getTransactionFee());
             transaction.setCommission(commission);
             transaction.setCommissionWorthy(CommissionWorthyEnum.YES.getCode());
             transactionRepository.save(transaction);

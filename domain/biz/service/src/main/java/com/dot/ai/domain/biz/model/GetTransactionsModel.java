@@ -1,6 +1,6 @@
 package com.dot.ai.domain.biz.model;
 
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -17,7 +17,7 @@ public class GetTransactionsModel {
 
     private String sessionId;
 
-    private TransactionStatusEnum status;
+    private StatusEnum status;
 
     private String responseCode;
 

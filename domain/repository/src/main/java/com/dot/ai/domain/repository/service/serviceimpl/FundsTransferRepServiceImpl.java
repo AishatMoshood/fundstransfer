@@ -1,6 +1,6 @@
 package com.dot.ai.domain.repository.service.serviceimpl;
 
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.commonservice.param.PaymentParam;
 import com.dot.ai.domain.repository.service.FundsTransferRepService;
 import com.dot.ai.repository.entities.ChannelInfo;
@@ -72,7 +72,7 @@ public class FundsTransferRepServiceImpl implements FundsTransferRepService {
                                                   Optional<BigDecimal> minAmount,
                                                   Optional<Date> startDate,
                                                   Optional<Date> endDate,
-                                                  Optional<TransactionStatusEnum> status,
+                                                  Optional<StatusEnum> status,
                                                   Pageable pageable) {
         Specification<TransactionOrder> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates  = new ArrayList<>();
@@ -81,9 +81,9 @@ public class FundsTransferRepServiceImpl implements FundsTransferRepService {
             minAmount.ifPresent(amount -> predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.
                     get("originalTransactionAmount"), amount)));
             startDate.ifPresent(start -> predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.
-                    get("timestamp"), start)));
+                    get("gmtCreated"), start)));
             endDate.ifPresent(end -> predicates.add(criteriaBuilder.lessThanOrEqualTo(root.
-                    get("timestamp"), end)));
+                    get("gmtCreated"), end)));
             status.ifPresent(s -> predicates.add(criteriaBuilder.equal(root.
                     get("status"), s)));
 
@@ -109,7 +109,7 @@ public class FundsTransferRepServiceImpl implements FundsTransferRepService {
 
     @Override
     public List<TransactionOrder> getAllSuccessfulTransactions() {
-        return transactionOrderRepository.findByStatus(TransactionStatusEnum.SUCCESSFUL);
+        return transactionOrderRepository.findByStatus(StatusEnum.SUCCESSFUL);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class FundsTransferRepServiceImpl implements FundsTransferRepService {
     }
 
     @Override
-    public TransactionOrder updateBySessionId(TransactionStatusEnum status, String responseCode,
+    public TransactionOrder updateBySessionId(StatusEnum status, String responseCode,
                                               String sessionId){
         TransactionOrder transactionOrder = update(transactionOrderRepository.findBySessionId(sessionId), status, responseCode);
         transactionOrderRepository.save(transactionOrder);

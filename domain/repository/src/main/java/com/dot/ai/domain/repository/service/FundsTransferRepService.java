@@ -1,6 +1,6 @@
 package com.dot.ai.domain.repository.service;
 
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.commonservice.param.PaymentParam;
 import com.dot.ai.repository.entities.ChannelInfo;
 import com.dot.ai.repository.entities.IndividualAccountInfo;
@@ -33,7 +33,7 @@ public interface FundsTransferRepService {
                                            Optional<BigDecimal> minAmount,
                                            Optional<Date> startDate,
                                            Optional<Date> endDate,
-                                           Optional<TransactionStatusEnum> status,
+                                           Optional<StatusEnum> status,
                                            Pageable pageable);
 
     List<TransactionOrder> generateDailySummary(Date startOfDay, Date endOfDay);
@@ -42,6 +42,6 @@ public interface FundsTransferRepService {
 
     TransactionOrder save(PaymentParam param, String key);
 
-    TransactionOrder updateBySessionId(TransactionStatusEnum status, String responseCode,
+    TransactionOrder updateBySessionId(StatusEnum status, String responseCode,
                                        String sessionId);
 }

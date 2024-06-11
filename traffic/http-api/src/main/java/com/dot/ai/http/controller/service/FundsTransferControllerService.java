@@ -1,6 +1,6 @@
 package com.dot.ai.http.controller.service;
 
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.http.controller.request.PaymentRequest;
 import com.dot.ai.http.controller.response.FundsTransferResponse;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +40,7 @@ public interface FundsTransferControllerService {
             Optional<BigDecimal> minAmount,
             Optional<Date> startDate,
             Optional<Date> endDate,
-            Optional<TransactionStatusEnum> status,
+            Optional<StatusEnum> status,
             String key,
             Pageable pageable);
 

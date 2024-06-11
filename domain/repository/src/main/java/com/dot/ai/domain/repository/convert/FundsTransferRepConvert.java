@@ -1,7 +1,7 @@
 package com.dot.ai.domain.repository.convert;
 
 import com.dot.ai.commonservice.enums.CommissionWorthyEnum;
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.commonservice.models.BeneficiaryInfo;
 import com.dot.ai.commonservice.models.SenderInfo;
 import com.dot.ai.commonservice.param.PaymentParam;
@@ -23,7 +23,7 @@ public class FundsTransferRepConvert {
         TransactionOrder transactionOrder = new TransactionOrder();
         transactionOrder.setChannel(channelName);
         transactionOrder.setTransactionId(param.getTransactionId());
-        transactionOrder.setStatus(TransactionStatusEnum.PENDING);
+        transactionOrder.setStatus(StatusEnum.PENDING);
         transactionOrder.setSessionId(UUID.randomUUID().toString());
         transactionOrder.setNarration(param.getNarration());
         transactionOrder.setOriginalTransactionAmount(param.getAmount());
@@ -53,7 +53,7 @@ public class FundsTransferRepConvert {
     }
 
     public static TransactionOrder update(TransactionOrder transactionOrder,
-                                          TransactionStatusEnum status,
+                                          StatusEnum status,
                                           String responseCode){
         transactionOrder.setStatus(status);
         transactionOrder.setResponseCode(responseCode);

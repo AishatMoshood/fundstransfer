@@ -28,7 +28,7 @@
     </modules>
 
     <properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<javax.activation.version>1.2.0</javax.activation.version>
 		<jaxb.api.version>2.3.0</jaxb.api.version>
 		<jaxb.api.impl.version>2.3.4</jaxb.api.impl.version>

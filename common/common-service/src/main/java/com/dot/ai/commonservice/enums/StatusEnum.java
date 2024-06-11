@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
  * @author Aishat Moshood
  * @since 08/06/2024
  */
-public enum TransactionStatusEnum {
+public enum StatusEnum {
 
     /**
      * transaction status
@@ -15,7 +15,6 @@ public enum TransactionStatusEnum {
     PENDING(3),
     SUCCESSFUL(1),
     FAILED(2),
-    INIT(0)
 
 
     ;
@@ -23,21 +22,17 @@ public enum TransactionStatusEnum {
     @EnumValue
     private final int code;
 
-    TransactionStatusEnum(int code) {
+    StatusEnum(int code) {
         this.code = code;
     }
-
 
     public int getCode() {
         return code;
     }
 
-    public boolean isFinal() {
-        return this == SUCCESSFUL || this == FAILED;
-    }
 
-    public static TransactionStatusEnum getStatus(int status) {
-        for (TransactionStatusEnum value : values()) {
+    public static StatusEnum getStatus(int status) {
+        for (StatusEnum value : values()) {
             if (value.getCode() == status) {
                 return value;
             }

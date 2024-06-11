@@ -1,6 +1,6 @@
 package com.dot.ai.repository.repositories;
 
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.repository.entities.TransactionOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -15,7 +15,7 @@ public interface TransactionOrderRepository extends JpaRepository<TransactionOrd
 
       List<TransactionOrder> findByDateCreatedBetween(Date startOfDay, Date endOfDay);
 
-      List<TransactionOrder> findByStatus(TransactionStatusEnum status);
+      List<TransactionOrder> findByStatus(StatusEnum status);
 
       TransactionOrder findBySessionId(String sessionId);
 

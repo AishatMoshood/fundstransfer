@@ -1,12 +1,10 @@
 package com.dot.ai.domain.biz.service;
 
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.commonservice.models.FundsTransferBaseModel;
 import com.dot.ai.domain.biz.model.DailySummaryModel;
 import com.dot.ai.domain.biz.model.GetTransactionsModel;
-import com.dot.ai.domain.biz.model.NameEnquiryModel;
 import com.dot.ai.commonservice.models.PaymentModel;
-import com.dot.ai.domain.biz.param.NameEnquiryParam;
 import com.dot.ai.commonservice.param.PaymentParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +42,7 @@ public interface FundsTransferService {
             Optional<BigDecimal> minAmount,
             Optional<Date> startDate,
             Optional<Date> endDate,
-            Optional<TransactionStatusEnum> status,
+            Optional<StatusEnum> status,
             Pageable pageable);
 
 

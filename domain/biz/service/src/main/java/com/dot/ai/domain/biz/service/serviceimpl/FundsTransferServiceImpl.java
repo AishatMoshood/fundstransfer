@@ -1,17 +1,12 @@
 package com.dot.ai.domain.biz.service.serviceimpl;
 
-import com.alibaba.fastjson.JSON;
 import com.dot.ai.commonservice.enums.ResponseCodeEnum;
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
-import com.dot.ai.commonservice.models.BeneficiaryInfo;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.commonservice.models.FundsTransferBaseModel;
-import com.dot.ai.commonservice.models.SenderInfo;
-import com.dot.ai.domain.biz.model.DailySummaryModel;
-import com.dot.ai.domain.biz.model.NameEnquiryModel;
 import com.dot.ai.commonservice.models.PaymentModel;
-import com.dot.ai.domain.biz.model.GetTransactionsModel;
-import com.dot.ai.domain.biz.param.NameEnquiryParam;
 import com.dot.ai.commonservice.param.PaymentParam;
+import com.dot.ai.domain.biz.model.DailySummaryModel;
+import com.dot.ai.domain.biz.model.GetTransactionsModel;
 import com.dot.ai.domain.biz.service.FundsTransferService;
 import com.dot.ai.domain.repository.service.FundsTransferRepService;
 import com.dot.ai.repository.entities.IndividualAccountInfo;
@@ -57,7 +52,7 @@ public class FundsTransferServiceImpl implements FundsTransferService {
 
             //params check
             if (!validatePaymentInformation(param)){
-                return result.setResponseCodeAndMessage(ResponseCodeEnum.F15);
+                return result.setResponseCodeAndMessage(ResponseCodeEnum.FA15);
             }
 
             if(!verifyAccount(param, result)){
@@ -68,17 +63,17 @@ public class FundsTransferServiceImpl implements FundsTransferService {
             result.setData(response);
             return result.setResponseCodeAndMessage(ResponseCodeEnum.SCS01);
         } catch (DuplicateKeyException e){
-            result.setResponseCodeAndMessage(ResponseCodeEnum.F10);
+            result.setResponseCodeAndMessage(ResponseCodeEnum.FA10);
             log.error("transfer failed with duplicate session id :{}",sessionId,e);
         } catch (Exception e) {
             log.warn("transfer pending = {}", sessionId, e);
-            result.setResponseCodeAndMessage(ResponseCodeEnum.P03);
+            result.setResponseCodeAndMessage(ResponseCodeEnum.PEN03);
         } finally {
             // update the status of the order(can not update the database if the request is duplicated)
             TransactionOrder transactionOrder = updateResponseCodeAndStatus(null, result.getResponseCode(), sessionId);
-            if (transactionOrder == null && !ResponseCodeEnum.F10.getRespCode().equals(result.getResponseCode())){
+            if (transactionOrder == null && !ResponseCodeEnum.FA10.getRespCode().equals(result.getResponseCode())){
                 log.error("response code and status update failed,param:{}",param);
-                result.setResponseCodeAndMessage(ResponseCodeEnum.F11);
+                result.setResponseCodeAndMessage(ResponseCodeEnum.FA11);
             }
         }
         return result;
@@ -91,7 +86,7 @@ public class FundsTransferServiceImpl implements FundsTransferService {
             Optional<BigDecimal> minAmount,
             Optional<Date> startDate,
             Optional<Date> endDate,
-            Optional<TransactionStatusEnum> status,
+            Optional<StatusEnum> status,
             Pageable pageable) {
         FundsTransferBaseModel<Page<GetTransactionsModel>> result = new FundsTransferBaseModel<>();
         try {
@@ -108,7 +103,7 @@ public class FundsTransferServiceImpl implements FundsTransferService {
             result.setResponseCodeAndMessage(ResponseCodeEnum.SCS01);
         } catch (Exception e){
             log.error("error generating paginated transactions = {}", e);
-            result.setResponseCodeAndMessage(ResponseCodeEnum.F11);
+            result.setResponseCodeAndMessage(ResponseCodeEnum.FA11);
         }
         return result;
     }
@@ -122,7 +117,7 @@ public class FundsTransferServiceImpl implements FundsTransferService {
             List<TransactionOrder> transactions = fundsTransferRepService.generateDailySummary(startOfDay, endOfDay);
             if(transactions == null){
                 log.error("error generating daily summary of transactions = {}", date);
-                result.setResponseCodeAndMessage(ResponseCodeEnum.F11);
+                result.setResponseCodeAndMessage(ResponseCodeEnum.FA11);
                 return result;
             }
 
@@ -137,15 +132,15 @@ public class FundsTransferServiceImpl implements FundsTransferService {
             result.setData(convertToServiceModel(date, transactions));
         } catch (Exception e){
             log.error("error generating daily summary of transactions = {}",date, e);
-            result.setResponseCodeAndMessage(ResponseCodeEnum.F11);
+            result.setResponseCodeAndMessage(ResponseCodeEnum.FA11);
         }
 
         return result;
     }
 
 
-    private TransactionOrder updateResponseCodeAndStatus(TransactionStatusEnum status, String responseCode,
-                                                                      String sessionId) {
+    private TransactionOrder updateResponseCodeAndStatus(StatusEnum status, String responseCode,
+                                                         String sessionId) {
         log.info("update response code and status{}", responseCode, status);
         try {
             if (StringUtils.isBlank(sessionId)) {
@@ -154,7 +149,7 @@ public class FundsTransferServiceImpl implements FundsTransferService {
             if (status == null) {
                 status = ResponseCodeEnum.getStatus(responseCode);
             }
-            if (!ResponseCodeEnum.F10.getRespCode().equals(responseCode)) {
+            if (!ResponseCodeEnum.FA10.getRespCode().equals(responseCode)) {
                 return fundsTransferRepService.updateBySessionId(status, responseCode, sessionId);
             }
         } catch (Exception e) {
@@ -162,25 +157,6 @@ public class FundsTransferServiceImpl implements FundsTransferService {
                     sessionId, responseCode, status, e);
         }
         return null;
-    }
-
-
-    private Boolean validateRequest(NameEnquiryParam param, FundsTransferBaseModel<NameEnquiryModel> serviceModel){
-        if (param == null) {
-            log.info("account verification failed with invalid request body");
-            serviceModel.setResponseCodeAndMessage(ResponseCodeEnum.F14);
-            return false;
-        }
-
-        if(param.getBeneficiaryInfo() == null ||
-                StringUtils.isBlank(param.getBeneficiaryInfo().getBeneficiaryAccountNumber()) ||
-                StringUtils.isBlank(param.getBeneficiaryInfo().getBeneficiaryBankCode())){
-            log.info("invalid beneficiary");
-            serviceModel.setResponseCodeAndMessage(ResponseCodeEnum.F15);
-            return false;
-        }
-
-        return true;
     }
 
 
@@ -200,7 +176,7 @@ public class FundsTransferServiceImpl implements FundsTransferService {
                 param.getSender().getSenderKycLevel());
 
         if(beneficiaryAccountInfo == null || senderAccountInfo == null){
-           paymentModel.setResponseCodeAndMessage(ResponseCodeEnum.F15);
+           paymentModel.setResponseCodeAndMessage(ResponseCodeEnum.FA15);
            return false;
         }
 
@@ -225,34 +201,31 @@ public class FundsTransferServiceImpl implements FundsTransferService {
             result = "Beneficiary account name is null";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryAccountNumber())) {
-            result = "Beneficiary Ais null";
+            result = "Beneficiary account number null";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryBankCode())) {
-            result = "Beneficiary is null";
+            result = "Beneficiary bank code is null";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryKycLevel())){
-            result = "Beneficiary is null";
-        }
-        if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryBvn())){
-            result = "Beneficiary is null";
+            result = "Beneficiary kyc level is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderBvn())){
-            result = "Beneficiary is null";
+            result = "sender bvn  is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderAccountName())) {
-            result = "Beneficiary is null";
+            result = "sender account name is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderAccountNumber())) {
-            result = "Beneficiary is null";
+            result = "sender account number is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderBankCode())) {
-            result = "Beneficiary is null";
+            result = "sender bank code is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderKycLevel())) {
-            result = "Beneficiary is null";
+            result = "sender kyc level is null";
         }
-        if (param.getAmount().compareTo(BigDecimal.ZERO) <= 0 ){
-            result = "Beneficiary is null";
+        if (param.getAmount().compareTo(BigDecimal.ZERO) < 100 ){
+            result = "amount is less than 100";
         }
 
         if (StringUtils.isNotBlank(result)){
@@ -267,7 +240,7 @@ public class FundsTransferServiceImpl implements FundsTransferService {
                                     Optional<BigDecimal> minAmount,
                                     Optional<Date> startDate,
                                     Optional<Date> endDate,
-                                    Optional<TransactionStatusEnum> status){
+                                    Optional<StatusEnum> status){
         if (accountNumber.isEmpty() || StringUtils.isBlank(accountNumber.get()) || minAmount.isEmpty() ||
             startDate.isEmpty() || endDate.isEmpty() || status.isEmpty()) {
             return false;

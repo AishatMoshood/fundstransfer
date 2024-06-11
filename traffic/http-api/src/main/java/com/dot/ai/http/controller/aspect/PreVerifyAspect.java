@@ -60,13 +60,13 @@ public class PreVerifyAspect {
 
             if (StringUtils.isBlank(key)){
                 response = new FundsTransferBaseModel();
-                response.setResponseCodeAndMessage(ResponseCodeEnum.F01);
+                response.setResponseCodeAndMessage(ResponseCodeEnum.FA01);
             }
 
             ChannelInfo channelInfo = channelInfoRepository.findByChannelKey(key);
             if (channelInfo == null || channelInfo.getChannelValidity().equals("false")){
                 response = new FundsTransferBaseModel();
-                response.setResponseCodeAndMessage(ResponseCodeEnum.F01);
+                response.setResponseCodeAndMessage(ResponseCodeEnum.FA01);
             }
             if (response != null){
                 return new FundsTransferResponse(encryptionService.aesEncrypt(
@@ -75,7 +75,7 @@ public class PreVerifyAspect {
             return point.proceed();
         }catch (Exception e){
             response = new FundsTransferBaseModel();
-            response.setResponseCodeAndMessage(ResponseCodeEnum.P03);
+            response.setResponseCodeAndMessage(ResponseCodeEnum.PEN03);
             return new FundsTransferResponse(encryptionService.aesEncrypt(
                     JSON.toJSONString(response), ""));
         }

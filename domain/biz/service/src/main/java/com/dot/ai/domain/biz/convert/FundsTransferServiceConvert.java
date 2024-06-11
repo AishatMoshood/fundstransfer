@@ -1,18 +1,16 @@
 package com.dot.ai.domain.biz.convert;
 
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import com.dot.ai.commonservice.models.BeneficiaryInfo;
 import com.dot.ai.commonservice.models.PaymentModel;
 import com.dot.ai.commonservice.models.SenderInfo;
 import com.dot.ai.domain.biz.model.DailySummaryModel;
 import com.dot.ai.domain.biz.model.GetTransactionsModel;
-import com.dot.ai.commonservice.param.PaymentParam;
 import com.dot.ai.repository.entities.TransactionOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -93,11 +91,11 @@ public class FundsTransferServiceConvert {
         summary.setDate(date);
         summary.setTotalTransactions(totalTransactions);
         summary.setTotalSuccessfulTransactions(countTransactionsByStatus(transactions,
-                TransactionStatusEnum.SUCCESSFUL));
+                StatusEnum.SUCCESSFUL));
         summary.setTotalPendingTransactions(countTransactionsByStatus(transactions,
-                TransactionStatusEnum.PENDING));
+                StatusEnum.PENDING));
         summary.setTotalFailedTransactions(countTransactionsByStatus(transactions,
-                TransactionStatusEnum.FAILED));
+                StatusEnum.FAILED));
         summary.setTotalAmount(sumTransactionsByType(transactions,
                 TransactionOrder::getOriginalTransactionAmount));
         summary.setTotalTransactionFees(sumTransactionsByType(transactions,
@@ -108,7 +106,7 @@ public class FundsTransferServiceConvert {
     }
 
 
-    private static Long countTransactionsByStatus(List<TransactionOrder> transactions, TransactionStatusEnum status) {
+    private static Long countTransactionsByStatus(List<TransactionOrder> transactions, StatusEnum status) {
         return transactions.stream()
                 .filter(transaction -> transaction.getStatus() == status)
                 .count();

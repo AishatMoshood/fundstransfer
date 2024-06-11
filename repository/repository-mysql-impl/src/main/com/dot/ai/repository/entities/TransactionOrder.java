@@ -1,7 +1,6 @@
 package com.dot.ai.repository.entities;
 
-import com.dot.ai.commonservice.enums.CommissionWorthyEnum;
-import com.dot.ai.commonservice.enums.TransactionStatusEnum;
+import com.dot.ai.commonservice.enums.StatusEnum;
 import io.swagger.annotations.ApiModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,7 +39,7 @@ public class TransactionOrder extends BaseEntity {
     /**
      * status for of a transaction,1:success;2:pending;3:fail;
      */
-    private TransactionStatusEnum status;
+    private StatusEnum status;
 
     /**
      * response code
