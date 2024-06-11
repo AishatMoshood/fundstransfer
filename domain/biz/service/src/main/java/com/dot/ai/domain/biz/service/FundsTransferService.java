@@ -22,18 +22,11 @@ import java.util.Optional;
 public interface FundsTransferService {
 
     /**
-     * Customer validation
-     * @param param includes account number,request id
-     * @return model,includes full name,kyc level,bvn etc.
-     */
-    FundsTransferBaseModel<NameEnquiryModel> nameEnquiry(NameEnquiryParam param);
-
-    /**
      * Transfer from between two financial institutions
      * @param param includes account number,amount,transaction id
      * @return model includes full name,kyc level,bvn etc. for both beneficiary and sender
      */
-    PaymentModel payment(PaymentParam param);
+    FundsTransferBaseModel<PaymentModel> payment(PaymentParam param, String key);
 
     /**
      * Query transaction by optional param
@@ -60,4 +53,5 @@ public interface FundsTransferService {
      * @return encryptedData,includes totalTransactions, totalTransactionFee
      */
     FundsTransferBaseModel<DailySummaryModel> generateDailySummary(Date date);
+
 }

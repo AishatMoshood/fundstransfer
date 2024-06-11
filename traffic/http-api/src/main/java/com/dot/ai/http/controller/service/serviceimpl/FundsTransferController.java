@@ -4,15 +4,15 @@ import com.alibaba.fastjson2.JSON;
 import com.dot.ai.commonservice.enums.ResponseCodeEnum;
 import com.dot.ai.commonservice.enums.TransactionStatusEnum;
 import com.dot.ai.commonservice.models.FundsTransferBaseModel;
+import com.dot.ai.commonservice.models.PaymentModel;
+import com.dot.ai.commonservice.param.PaymentParam;
 import com.dot.ai.commonservice.service.EncryptionService;
 import com.dot.ai.domain.biz.model.DailySummaryModel;
 import com.dot.ai.domain.biz.model.GetTransactionsModel;
-import com.dot.ai.domain.biz.model.NameEnquiryModel;
 import com.dot.ai.domain.biz.param.NameEnquiryParam;
 import com.dot.ai.domain.biz.service.FundsTransferService;
 import com.dot.ai.http.controller.annotation.PreVerify;
 import com.dot.ai.http.controller.constants.FundsTransferControllerConstant;
-import com.dot.ai.http.controller.request.NameEnquiryRequest;
 import com.dot.ai.http.controller.request.PaymentRequest;
 import com.dot.ai.http.controller.response.FundsTransferResponse;
 import com.dot.ai.http.controller.service.FundsTransferControllerService;
@@ -54,34 +54,7 @@ FundsTransferController implements FundsTransferControllerService {
     }
 
     /**
-     * Name enquiry
-     * @param request encryptedData,includes account number,request id
-     * @return encryptedData,includes full name,kyc level,bvn etc.
-     */
-    @PreVerify
-    @PostMapping("/nameenquiry")
-    @ApiOperation("Customer validation")
-    @Override
-    public FundsTransferResponse nameEnquiry(@RequestBody NameEnquiryRequest request,
-                                              @RequestHeader("Authorization") String key) {
-        FundsTransferBaseModel<NameEnquiryModel> result;
-        try {
-            String requestBody = encryptionService.aesDecrypt(request.getData(), key);
-            if (StringUtils.isBlank(requestBody)){
-                return decryptionFailed(key);
-            }
-            result = fundsTransferService.nameEnquiry(
-                    JSON.parseObject(requestBody, NameEnquiryParam.class));
-        }catch (Exception e){
-            log.error("name enquiry error,request:{}",request,e);
-            return decryptionFailed(key);
-
-        }
-        return new FundsTransferResponse(encryptionService.aesEncrypt(JSON.toJSONString(result), key));
-    }
-
-    /**
-     * Transfer from between two financial institutions
+     * Transfer between two financial institutions
      * @param request encryptedData,includes account number,amount,transaction id
      * @return encryptedData includes full name,kyc level,bvn etc. for both beneficiary and sender
      */
@@ -91,8 +64,20 @@ FundsTransferController implements FundsTransferControllerService {
     @Override
     public FundsTransferResponse payment(@RequestBody PaymentRequest request,
                                                            @RequestHeader("Authorization") String key) {
+        FundsTransferBaseModel<PaymentModel> result;
+        try {
+            String requestBody = encryptionService.aesDecrypt(request.getData(), key);
+            if (StringUtils.isBlank(requestBody)){
+                return decryptionFailed(key);
+            }
+            result = fundsTransferService.payment(
+                    JSON.parseObject(requestBody, PaymentParam.class), key);
+        } catch (Exception e){
+            log.error("payment request error,request:{}",request,e);
+            return decryptionFailed(key);
 
-        return null;
+        }
+        return new FundsTransferResponse(encryptionService.aesEncrypt(JSON.toJSONString(result), key));
     }
 
     /**
@@ -139,7 +124,7 @@ FundsTransferController implements FundsTransferControllerService {
      * @return encryptedData,includes totalTransactions, totalTransactionFee
      */
     @PreVerify
-    @PostMapping("/dailysummary")
+    @GetMapping("/dailysummary")
     @ApiOperation("Daily Summary")
     @Override
     public FundsTransferResponse generateDailyTransactionSummary(@RequestParam Date date,

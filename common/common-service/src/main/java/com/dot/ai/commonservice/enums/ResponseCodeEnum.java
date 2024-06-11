@@ -28,7 +28,7 @@ public enum ResponseCodeEnum {
     F13("F13",TransactionStatusEnum.FAILED,"Invalid Authorization Key"),
     F14("F14",TransactionStatusEnum.FAILED,"Account Verification Failed"),
     F15("F15",TransactionStatusEnum.FAILED,"One or more required fields is null or empty"),
-    F16("F16",TransactionStatusEnum.FAILED,"Invalid beneficiary"),
+    F16("F16",TransactionStatusEnum.FAILED,"Invalid beneficiary");
 
     private String respCode;
 

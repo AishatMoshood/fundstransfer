@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.dot.ai.domain.repository.convert.FundsTransferRepConvert.convert;
+import static com.dot.ai.domain.repository.convert.FundsTransferRepConvert.update;
 
 /**
  * @author Aishat Moshood
@@ -112,8 +113,17 @@ public class FundsTransferRepServiceImpl implements FundsTransferRepService {
     }
 
     @Override
-    public TransactionOrder save(PaymentParam param){
-        TransactionOrder transactionOrder = convert(param);
+    public TransactionOrder save(PaymentParam param, String key){
+        ChannelInfo channelInfo = channelInfoRepository.findByChannelKey(key);
+        TransactionOrder transactionOrder = convert(param, channelInfo.getChannelName());
+        transactionOrderRepository.save(transactionOrder);
+        return transactionOrder;
+    }
+
+    @Override
+    public TransactionOrder updateBySessionId(TransactionStatusEnum status, String responseCode,
+                                              String sessionId){
+        TransactionOrder transactionOrder = update(transactionOrderRepository.findBySessionId(sessionId), status, responseCode);
         transactionOrderRepository.save(transactionOrder);
         return transactionOrder;
     }

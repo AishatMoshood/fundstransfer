@@ -17,5 +17,7 @@ public interface TransactionOrderRepository extends JpaRepository<TransactionOrd
 
       List<TransactionOrder> findByStatus(TransactionStatusEnum status);
 
+      TransactionOrder findBySessionId(String sessionId);
+
 
 }

@@ -28,7 +28,6 @@ import java.util.*;
 
 import static com.dot.ai.domain.biz.convert.FundsTransferServiceConvert.convert;
 import static com.dot.ai.domain.biz.convert.FundsTransferServiceConvert.convertToServiceModel;
-import static java.lang.StringUTF16.compareTo;
 
 /**
  * @author Aishat Moshood
@@ -46,35 +45,15 @@ public class FundsTransferServiceImpl implements FundsTransferService {
     }
 
     @Override
-    public FundsTransferBaseModel<NameEnquiryModel> nameEnquiry(NameEnquiryParam param) {
-        FundsTransferBaseModel<NameEnquiryModel> serviceModel = new FundsTransferBaseModel<>();
-        try {
-            if(!validateRequest(param, serviceModel)){
-                return serviceModel;
-            }
-            NameEnquiryModel nameEnquiryModel = verifyAccount(param);
-            if (nameEnquiryModel == null){
-                return serviceModel.setResponseCodeAndMessage(ResponseCodeEnum.F03);
-            }
-            serviceModel.setData(nameEnquiryModel);
-            serviceModel.setResponseCodeAndMessage(ResponseCodeEnum.SCS01);
-        } catch (Exception e) {
-            log.error("name enquiry exception, request body: {}", param, e);
-            serviceModel.setResponseCodeAndMessage(ResponseCodeEnum.F11);
-        }
-        log.info("customer validation, request: {},result: {}", param, JSON.toJSONString(serviceModel));
-        return serviceModel;
-    }
-
-
-    @Override
-    public FundsTransferBaseModel<PaymentModel> payment(PaymentParam param) {
+    public FundsTransferBaseModel<PaymentModel> payment(PaymentParam param, String key) {
         PaymentModel response = new PaymentModel();
         FundsTransferBaseModel<PaymentModel> result = new FundsTransferBaseModel<>();
+        String sessionId = null;
 
         try {
             //save record
-            TransactionOrder transactionOrder = fundsTransferRepService.save(param);
+            TransactionOrder transactionOrder = fundsTransferRepService.save(param, key);
+            sessionId = transactionOrder.getSessionId();
 
             //params check
             if (!validatePaymentInformation(param)){
@@ -85,21 +64,20 @@ public class FundsTransferServiceImpl implements FundsTransferService {
                 return result;
             }
 
-
+            response = convert(transactionOrder);
             result.setData(response);
             return result.setResponseCodeAndMessage(ResponseCodeEnum.SCS01);
         } catch (DuplicateKeyException e){
             result.setResponseCodeAndMessage(ResponseCodeEnum.F10);
-            log.error("deposit failed with duplicate session id :{}",param.getSessionId(),e);
+            log.error("transfer failed with duplicate session id :{}",sessionId,e);
         } catch (Exception e) {
-            log.warn("execute transfer inward exception sessionId = {}", param.getSessionId(), e);
+            log.warn("transfer pending = {}", sessionId, e);
             result.setResponseCodeAndMessage(ResponseCodeEnum.P03);
         } finally {
-            // update the status of the order(can not update the database if the request is duplicate)
-            paymentRepModel = commonManager.updateResponseCodeAndStatus(null, result.getResponseCode(),
-                             result.getResponseCode(), param.getSessionId());
-            if (paymentRepModel == null && !ResponseCodeEnum.F10.getRespCode().equals(result.getResponseCode())){
-                log.error("update response code and status failed,param:{}",param);
+            // update the status of the order(can not update the database if the request is duplicated)
+            TransactionOrder transactionOrder = updateResponseCodeAndStatus(null, result.getResponseCode(), sessionId);
+            if (transactionOrder == null && !ResponseCodeEnum.F10.getRespCode().equals(result.getResponseCode())){
+                log.error("response code and status update failed,param:{}",param);
                 result.setResponseCodeAndMessage(ResponseCodeEnum.F11);
             }
         }
@@ -166,6 +144,27 @@ public class FundsTransferServiceImpl implements FundsTransferService {
     }
 
 
+    private TransactionOrder updateResponseCodeAndStatus(TransactionStatusEnum status, String responseCode,
+                                                                      String sessionId) {
+        log.info("update response code and status{}", responseCode, status);
+        try {
+            if (StringUtils.isBlank(sessionId)) {
+                return null;
+            }
+            if (status == null) {
+                status = ResponseCodeEnum.getStatus(responseCode);
+            }
+            if (!ResponseCodeEnum.F10.getRespCode().equals(responseCode)) {
+                return fundsTransferRepService.updateBySessionId(status, responseCode, sessionId);
+            }
+        } catch (Exception e) {
+            log.error("update response code and status failed,sessionId:{},responseCode:{},status:{}",
+                    sessionId, responseCode, status, e);
+        }
+        return null;
+    }
+
+
     private Boolean validateRequest(NameEnquiryParam param, FundsTransferBaseModel<NameEnquiryModel> serviceModel){
         if (param == null) {
             log.info("account verification failed with invalid request body");
@@ -211,50 +210,49 @@ public class FundsTransferServiceImpl implements FundsTransferService {
     private Boolean validatePaymentInformation(PaymentParam param) {
         String result = null;
         if (param.getBeneficiary() == null) {
-            result = ParamErrorEnum.SESSION_ID_FORMAT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (param.getSender() == null) {
-            result = ParamErrorEnum.SESSION_ID_FORMAT_ERROR.getMsg();
+            result = "Sender is null";
         }
         if (StringUtils.isBlank(param.getTransactionId())) {
-            result = ParamErrorEnum.BENEFICIARY_ACCOUNT_NUMBER_ERROR.getMsg();
+            result = "Transactionid is blank";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryBvn())) {
-            result = ParamErrorEnum.ORIGINATOR_ACCOUNT_NAME_ERROR.getMsg();
+            result = "Beneficiary bvn is null";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryAccountName())) {
-            result = ParamErrorEnum.ORIGINATOR_ACCOUNT_NUMBER_ERROR.getMsg();
+            result = "Beneficiary account name is null";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryAccountNumber())) {
-            result = ParamErrorEnum.AMOUNT_ERROR.getMsg();
+            result = "Beneficiary Ais null";
         }
-
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryBankCode())) {
-            result = ParamErrorEnum.AMOUNT_FORMAT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryKycLevel())){
-            result = ParamErrorEnum.AMOUNT_FORMAT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (StringUtils.isBlank(param.getBeneficiary().getBeneficiaryBvn())){
-            result = ParamErrorEnum.AMOUNT_FORMAT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderBvn())){
-            result = ParamErrorEnum.AMOUNT_FORMAT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderAccountName())) {
-            result = ParamErrorEnum.ORIGINATOR_ACCOUNT_NAME_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderAccountNumber())) {
-            result = ParamErrorEnum.ORIGINATOR_ACCOUNT_NUMBER_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderBankCode())) {
-            result = ParamErrorEnum.AMOUNT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (StringUtils.isBlank(param.getSender().getSenderKycLevel())) {
-            result = ParamErrorEnum.AMOUNT_FORMAT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
         if (param.getAmount().compareTo(BigDecimal.ZERO) <= 0 ){
-            result = ParamErrorEnum.AMOUNT_FORMAT_ERROR.getMsg();
+            result = "Beneficiary is null";
         }
 
         if (StringUtils.isNotBlank(result)){

@@ -19,9 +19,9 @@ import java.util.UUID;
 
 public class FundsTransferRepConvert {
 
-    public static TransactionOrder convert(PaymentParam param){
+    public static TransactionOrder convert(PaymentParam param, String channelName){
         TransactionOrder transactionOrder = new TransactionOrder();
-        transactionOrder.setChannel();
+        transactionOrder.setChannel(channelName);
         transactionOrder.setTransactionId(param.getTransactionId());
         transactionOrder.setStatus(TransactionStatusEnum.PENDING);
         transactionOrder.setSessionId(UUID.randomUUID().toString());
@@ -51,6 +51,15 @@ public class FundsTransferRepConvert {
 
         return transactionOrder;
     }
+
+    public static TransactionOrder update(TransactionOrder transactionOrder,
+                                          TransactionStatusEnum status,
+                                          String responseCode){
+        transactionOrder.setStatus(status);
+        transactionOrder.setResponseCode(responseCode);
+        return transactionOrder;
+    }
+
 
     /**
      * Calculates the transaction fee for a given original amount.

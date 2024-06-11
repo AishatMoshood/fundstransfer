@@ -24,6 +24,7 @@
 		<module>traffic/http-api</module>
 		<module>repository/repository-mysql-impl</module>
 		<module>common/common-service</module>
+        <module>application/funds-transfer-application</module>
     </modules>
 
     <properties>

@@ -29,7 +29,9 @@ public class FundsTransferServiceConvert {
         PaymentModel serviceModel = new PaymentModel();
         serviceModel.setTransactionId(param.getTransactionId());
         serviceModel.setPaymentReference(UUID.randomUUID().toString());
+        serviceModel.setSessionId(param.getSessionId());
         serviceModel.setNarration(param.getNarration());
+        serviceModel.setAmount(param.getOriginalTransactionAmount());
 
         BeneficiaryInfo beneficiaryInfo = new BeneficiaryInfo();
         beneficiaryInfo.setBeneficiaryAccountName(param.getBeneficiaryAccountName());

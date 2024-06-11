@@ -1,7 +1,6 @@
 package com.dot.ai.http.controller.service;
 
 import com.dot.ai.commonservice.enums.TransactionStatusEnum;
-import com.dot.ai.http.controller.request.NameEnquiryRequest;
 import com.dot.ai.http.controller.request.PaymentRequest;
 import com.dot.ai.http.controller.response.FundsTransferResponse;
 import org.springframework.data.domain.Pageable;
@@ -16,14 +15,6 @@ import java.util.Optional;
  */
 
 public interface FundsTransferControllerService {
-
-
-    /**
-     * Customer validation
-     * @param request encryptedData,includes account number,request id
-     * @return encryptedData,includes full name,kyc level,bvn etc.
-     */
-    FundsTransferResponse nameEnquiry(NameEnquiryRequest request, String key);
 
     /**
      * Transfer between two financial institutions

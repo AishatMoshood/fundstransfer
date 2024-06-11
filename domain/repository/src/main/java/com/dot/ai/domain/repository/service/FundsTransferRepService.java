@@ -40,8 +40,8 @@ public interface FundsTransferRepService {
 
     List<TransactionOrder> getAllSuccessfulTransactions();
 
-    payment()
-    PaymentServiceModel payment(PaymentServiceParam param);
+    TransactionOrder save(PaymentParam param, String key);
 
-    TransactionOrder save(PaymentParam param);
+    TransactionOrder updateBySessionId(TransactionStatusEnum status, String responseCode,
+                                       String sessionId);
 }

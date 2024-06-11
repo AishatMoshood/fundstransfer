@@ -1,0 +1,15 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: funds-transfer-application
+  profiles:
+    active: local
+logback:
+  home: ${user.home}
+---
+spring:
+  profiles: local
+
+logback:
+  home: ./logs/
